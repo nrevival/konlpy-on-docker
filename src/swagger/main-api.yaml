@@ -1,0 +1,146 @@
+swagger: "2.0"
+
+info:
+  title: "ARAPI"
+  description: "ARA에서 사용할 API 목록"
+  version: "1.0"
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+basePath: /api
+
+paths:
+  /:
+    get:
+      tags: [sample]
+      summary: GET 방식의 결과 호출 예제
+      description: 기본적인 GET 방식의 예제를 나타냅니다. API의 작동여부, 혹은 가능한 input을 제공해주는 기능으로 사용하는 방법을 생각해주세요. 자세한 내용은 처음으로 개발하는 API를 참조해주세요.
+      operationId: modules.sample.sample_handler.get_sample # 위의 루트에 접속하는 경우 호출되는 함수를 특정합니다.
+      responses:
+        200:
+          description: 성공적으로 작업이 수행되게 되면 아래와 같은 결과가 반환됩니다. 현재는 시스템 정상여부만을 제공합니다.
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: 현재 시스템 상태를 텍스트의 형태로 설명합니다.
+                example: "정상적으로 요청이 처리되었습니다."
+        400:
+          description: 사용자의 요청방식이 잘못된 경우입니다.
+        500:
+          description: 현재 서버에 이슈가 있는 경우입니다. 관리자에게 문의해주세요.
+    post:
+      tags: [sample]
+      summary: POST 방식의 결과 호출 예제
+      description: 기본적인 POST 방식의 예제입니다. body로 전달되는 JSON dict를 처리하여 결과를 반환하는 예제입니다.
+      operationId: modules.sample.sample_handler.post_sample
+      parameters:
+        - name: data
+          in: body
+          schema:
+            type: object
+            required:
+              - a
+              - b
+            properties:
+              a:
+                type: integer
+                description: 입력하는 정수 a 값
+                example: 3
+              b:
+                type: integer
+                description: 입력하는 정수 b 값
+                example: 4
+      responses:
+        200:
+          description: 설명
+          schema:
+            type: object
+            properties:
+              a_+_b:
+                type: integer
+                description: 입력한 정수 a와 b의 합
+                example: 7
+              a_-_b:
+                type: integer
+                description: 입력한 정수 a와 b의 차 (a-b)
+                example: -1
+              a_*_b:
+                type: integer
+                description: 입력한 정수 a와 b의 곱
+                example: 12
+              a_/_b:
+                type: number
+                description: 입력한 정수 a와 b의 합
+                example: 0.75
+        400:
+          description: 사용자의 요청방식이 잘못된 경우입니다.
+
+  /{tID}:
+    get:
+      tags: [sample]
+      summary: 하위 패스 정보의 GET 방식 호출 예제
+      description: 하위 패스의 정보를 parameter로 받아서 이를 함수에서 처리하는 예제입니다. sub_path로 팀 code를 넣는 경우 해당 팀의 선수 명단을 반환하는 예제입니다.
+      operationId: modules.sample.sample_handler.get_subpath_sample
+      parameters:
+        - $ref: '#/parameters/tID'
+      responses:
+        200:
+          description: 성공적으로 작업이 수행되게 되면 아래와 같은 결과가 반환됩니다.
+          schema:
+            type: object
+            required:
+              - result
+              - players
+            properties:
+              result:
+                type: string
+                description: 입력한 팀 코드에 대한 부가적인 정보를 반환 합니다. 성공한 경우 Success 팀 코드가 없거나 이상한 경우 설명 메시지를 전달합니다.
+                example: "Success"
+              players:
+                type: array
+                description: 선수의 정보를 저장하는 배열
+                items:
+                  $ref: '#/definitions/Player'
+        400:
+          description: 사용자의 요청방식이 잘못된 경우입니다.
+        500:
+          description: 현재 서버에 이슈가 있는 경우입니다. 관리자에게 문의해주세요.
+
+parameters:
+  tID:
+    name: tID
+    description: 팀의 고유 ID
+    in: path
+    type: string
+    required: true
+    pattern: "^[a-zA-Z0-9-]+$"
+
+definitions:
+  Player:
+    description: 선수 정보에 대한 json dict
+    type: object
+    required:
+      - pID
+      - pName
+    properties:
+      pID:
+        type: string
+        description: 선수의 고유 ID 값
+        example: "62947"
+      pName:
+        type: string
+        description: 선수의 이름
+        example: "나성범"
+      bod:
+        type: string
+        description: 선수의 생년월일
+        example: "1989-10-03"
+      height:
+        type: integer
+        description: 선수의 키 (cm)
+        example: 183

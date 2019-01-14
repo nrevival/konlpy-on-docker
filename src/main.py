@@ -1,28 +1,8 @@
-import json
+import connexion
 
-from bottle import route, run, post, request
-from konlpy.tag import Mecab
+# https://github.com/hjacobs/connexion-example 를 참조하세요
 
-MECAB = Mecab()
-
-@post('/')
-def get_sentence():
-    result = dict()
-    req = dict(request.json)
-
-    if 'sentences' in req.keys():
-        result["sentences"] = req["sentences"]
-        result["pos"] = MECAB.pos(req["sentences"])
-        result["type"] = "mecab"
-        result["result"] = "Success"
-    else:
-        result["sentences"] = ''
-        result["pos"] = []
-        result["type"] = "mecab"
-        result["result"] = "Fail/문장 전송 실패"    
-    return result
-
-run(host='0.0.0.0', 
-    port=8899,
-    server='gunicorn'
-    )
+if __name__ == '__main__':
+    app = connexion.FlaskApp(__name__, port=8090, specification_dir='swagger/')
+    app.add_api('test.yaml', arguments={'title': 'Hello World Example'})
+    app.run()

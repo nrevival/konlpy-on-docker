@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+  web:
+    image: konlpy-on-docker
+    ports:
+      - 8090:8090
+    command:
+      
